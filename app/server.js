@@ -192,7 +192,8 @@ io.on('connection', function(client) {
         //sending message to clients in the room.
         console.log("New message sent!");
         io.emit("messageCreated", message.messageBody, message.userId, message.channelId,
-                                  message.userName, message.userAvatar, message.userAvatarColor); 
+                                  message.userName, message.userAvatar, message.userAvatarColor,
+                                  message.id, message.timeStamp); 
         });    
     });
 });
