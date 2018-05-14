@@ -4,10 +4,8 @@ require('./config/config');
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const http = require('http');
-const socket = require('socket.io');
+//const http = require('http');
+//const socket = require('socket.io');
 
 const {User} = require('./model/user');
 const {Account} = require('./model/account');
@@ -19,8 +17,9 @@ var {authenticate} = require('./middleware/authentication');
 var UserDataExtension = require('./extensions/userData');
 
 var app = express();
-app.server = http.createServer(app);
-var io = socket(app.server);
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+//var io = socket(app.server);
 
 const port = process.env.PORT;
 
@@ -146,27 +145,29 @@ var typingUsers = {};
 io.on('connection', function(client) {
     console.log("User connected...");
     // Listen for new channel create message from client (Android app)
-    client.on("newChannel", function(name, description) {
+    client.on('newChannel', function(name, description) {
+
         var newChannel = new Channel({
             name: name,
             description: description 
         });
+
         newChannel.save(function(err, channel) {
             if(err) {
                 console.log("Could not emit messages to other in the room" + err);
             }
             console.log("New channel added.");
-            io.emit("channelCreated", channel.name, channel.description, channel.id);
+            io.emit('channelCreated', channel.name, channel.description, channel.id);
         });
     });
     //Listen for user typing a message.
-    client.on("startType", function(userName, channelId) {
+    client.on('startType', function(userName, channelId) {
         console.log(userName + " is writing a message...");
         typingUsers[userName] = channelId;
         io.emit("userTypingUpdate", typingUsers, channelId);
     });
 
-    client.on("stopType", function(userName) {
+    client.on('stopType', function(userName) {
         console.log(userName + " has stopped writing a message.")
         delete typingUsers[userName];
         io.emit("userTypingUpdate", typingUsers);

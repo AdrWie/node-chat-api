@@ -8,5 +8,5 @@ if(env === 'development') {
 
   Object.keys(envConfig).forEach((key) => {
     process.env[key] = envConfig[key];
-  })
-}
+  });
+};
