@@ -65,8 +65,7 @@ AccountSchema.methods.removeToken = function (token) {
         }
     });
 };
-
-// Model method
+// Model method -
 AccountSchema.statics.findByToken = function (token) {
     var User = this;
     var decoded;
