@@ -2,7 +2,7 @@
 var env = process.env.NODE_ENV || 'development';
 
 // Grab settings for local development
-if(env === 'development') {
+if(env === 'development' || env === 'production') {
   var config = require('./config.json');
   var envConfig = config[env];
 
