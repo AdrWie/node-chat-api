@@ -140,7 +140,6 @@ app.get('/message/byChannel/:channelId', authenticate, (req, res) => {
 });
 
 // -- Websocket -- 
-var typingUsers = {};
 
 io.on('connection', function(client) {
     console.log("User connected...");
@@ -159,18 +158,6 @@ io.on('connection', function(client) {
             console.log("New channel added.");
             io.emit('channelCreated', channel.name, channel.description, channel.id);
         });
-    });
-    //Listen for user typing a message.
-    client.on('startType', function(userName, channelId) {
-        console.log(userName + " is writing a message...");
-        typingUsers[userName] = channelId;
-        io.emit("userTypingUpdate", typingUsers, channelId);
-    });
-
-    client.on('stopType', function(userName) {
-        console.log(userName + " has stopped writing a message.")
-        delete typingUsers[userName];
-        io.emit("userTypingUpdate", typingUsers);
     });
 
     // Listen for new chat message

@@ -41,7 +41,7 @@ AccountSchema.methods.toJSON = function () {
 
     return _.pick(userObject, ['_id', 'email']);
 };
-// Instance method
+// Instance method, construct an auth token, set it to the user token variable and return the token
 AccountSchema.methods.generateAuthToken = function () {
     var user = this;
     var access = 'auth';
@@ -54,18 +54,8 @@ AccountSchema.methods.generateAuthToken = function () {
     });
 };
 
-AccountSchema.methods.removeToken = function (token) {
-    var user = this;
-
-    return user.update({
-        $pull: {
-            tokens: {
-                token: token
-            }
-        }
-    });
-};
-// Model method -
+// Model method - Used to authenticate users token, decode user properties then compare properties
+// with provided token
 AccountSchema.statics.findByToken = function (token) {
     var User = this;
     var decoded;
@@ -82,7 +72,8 @@ AccountSchema.statics.findByToken = function (token) {
         'tokens.access': 'auth'
     });
 };
-
+// Find user email, if no user exist with given credentials reject, else compare given password with
+// stored encrypted password, if true resolve and return user.
 AccountSchema.statics.findByCredentials = function (email, password) {
     var user = this;
 
@@ -102,7 +93,8 @@ AccountSchema.statics.findByCredentials = function (email, password) {
         });
     });
 };
-
+// Middleware - executed before saving user to database, if password is modified, ecrypt it and continue
+// execute next function. If not modified just move on. 
 AccountSchema.pre('save', function (next) {
     var user = this;
 
